@@ -1,13 +1,14 @@
 package tank;
 
-import tank.connection.Connection;
+import tank.connection.ClientListenerThread;
+import tank.connection.FullConnection;
 
 import java.io.*;
 
 public class TankApplication {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Connection connection = new Connection();
+        ClientListenerThread connection = new ClientListenerThread();
         connection.start();
 
 
