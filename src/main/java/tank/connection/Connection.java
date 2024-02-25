@@ -1,11 +1,6 @@
 package tank.connection;
 
-import tank.event.KeyEventDto;
-
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,40 +9,18 @@ public class Connection extends Thread {
     private boolean isConnected = false;
     private ServerSocket serverSocket;
     private Socket input;
-    private InputStream is;
-    private ObjectInputStream ois;
-    TankConnection connection = new TankConnection();
+
 
     @Override
     public void run() {
         startConnection();
         while (true) {
             try {
-                connection = new TankConnection();
-                is = input.getInputStream();
-                ois = new ObjectInputStream(is);
-                DataInputStream dataInputStream = new DataInputStream(is);
-                String string = dataInputStream.readUTF();
-                System.out.println(string);
+                clientConnect();
             } catch (Exception e) {
                 e.printStackTrace();
-                try {
-                    isConnected = false;
-                    Thread.sleep(5000);
-                    clientConnect();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
             }
         }
-//        try {
-//            while (!isConnected) {
-//                closeConnection();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     public void startConnection() {
@@ -73,10 +46,5 @@ public class Connection extends Thread {
         System.out.println("Client connect");
     }
 
-    private void closeConnection() throws IOException {
-        is.close();
-        input.close();
-        serverSocket.close();
-    }
 
 }
