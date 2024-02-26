@@ -23,24 +23,25 @@ public class InputConnection extends Thread {
     }
 
     public void startConnection() {
+        try {
+            System.out.println("Start");
+            serverSocket = new ServerSocket(PORT);
+            clientConnect();
+        } catch (Exception e) {
             try {
-                System.out.println("Start");
-                serverSocket = new ServerSocket(PORT);
-                input = serverSocket.accept();
-                clientConnect();
-            } catch (Exception e) {
-                try {
-                    Thread.sleep(500);
-                    System.out.println("Try connection");
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
+                Thread.sleep(500);
+                System.out.println("Try connection");
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
+        }
 
     }
 
     private void clientConnect() throws IOException {
         input = serverSocket.accept();
+        ClientHandler clientHandler = new ClientHandler(input);
+        new Thread(clientHandler).start();
         System.out.println("Client connect");
     }
 

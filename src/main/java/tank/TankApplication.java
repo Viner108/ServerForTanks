@@ -9,9 +9,10 @@ public class TankApplication {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         InputConnection inputConnection = new InputConnection();
-        OutputConnection outputConnection = new OutputConnection();
+//        OutputConnection outputConnection = new OutputConnection();
         inputConnection.start();
-        outputConnection.start();
+//        outputConnection.start();
+
 
 
     }
