@@ -2,24 +2,22 @@ package tank.connection;
 
 import tank.event.KeyEventDto;
 
-import java.io.*;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-public class ClientHandler implements Runnable {
-
+public class ClientSender extends Thread {
     private Socket clientSocket;
 
-    public ClientHandler(Socket clientSocket) {
+    public ClientSender(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
     @Override
     public void run() {
         try {
-            InputStream inputStream = clientSocket.getInputStream();
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            OutputStream outputStream = clientSocket.getOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
             while (true) {
 
             }

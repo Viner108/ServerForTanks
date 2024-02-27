@@ -45,5 +45,4 @@ public class InputConnection extends Thread {
         System.out.println("Client connect");
     }
 
-
 }

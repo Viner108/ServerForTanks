@@ -2,19 +2,23 @@ package tank.connection;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class OutputConnection extends Thread {
-    private static String HOST = "192.168.1.105";
     private static int PORT = 8002;
-    private Socket socketOut;
-    private OutputStream outputStream;
+    private ServerSocket serverSocket;
+    private Socket output;
 
     @Override
     public void run() {
+        startConnection();
         while (true) {
-            if (socketOut == null || !isConnected()) {
-                startConnection();
+            try {
+                Thread.sleep(500);
+                clientConnect();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -22,10 +26,8 @@ public class OutputConnection extends Thread {
     public void startConnection() {
         try {
             System.out.println("Start");
-            socketOut = new Socket(HOST, PORT);
-            outputStream = socketOut.getOutputStream();
-            System.out.println("OutputConnection establishment");
-            isConnected();
+            serverSocket = new ServerSocket(PORT);
+            clientConnect();
         } catch (Exception e) {
             try {
                 Thread.sleep(500);
@@ -34,15 +36,13 @@ public class OutputConnection extends Thread {
                 ex.printStackTrace();
             }
         }
+
     }
 
-    public boolean isConnected() {
-        try {
-            outputStream.write(1);
-        } catch (IOException e) {
-            System.out.println("It isn't connection");
-            return false;
-        }
-        return true;
+    private void clientConnect() throws IOException {
+        output = serverSocket.accept();
+        ClientSender clientSender = new ClientSender(output);
+        new Thread(clientSender).start();
+        System.out.println("Client connect");
     }
 }
