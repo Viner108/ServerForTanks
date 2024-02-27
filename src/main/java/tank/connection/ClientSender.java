@@ -18,16 +18,25 @@ public class ClientSender extends Thread {
         try {
             OutputStream outputStream = clientSocket.getOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            int i = 0;
             while (true) {
-
+                KeyEventDto keyEventDto = new KeyEventDto();
+                keyEventDto.setKeyCode(i);
+                objectOutputStream.writeObject(keyEventDto);
+                i++;
+                Thread.sleep(1000);
             }
         } catch (Exception e) {
             try {
                 System.out.println("Client disconnect");
                 clientSocket.close();
+                OutputConnection.removeClientLink(getPort());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+    public int getPort(){
+        return clientSocket.getPort();
     }
 }

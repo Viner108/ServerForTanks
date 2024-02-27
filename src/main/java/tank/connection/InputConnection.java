@@ -3,11 +3,16 @@ package tank.connection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class InputConnection extends Thread {
+public class InputConnection extends Thread implements Connection{
     private static int PORT = 8001;
     private ServerSocket serverSocket;
     private Socket input;
+    private static Map<Integer,ClientHandler> handlers = new HashMap<>();
 
     @Override
     public void run() {
@@ -38,11 +43,20 @@ public class InputConnection extends Thread {
 
     }
 
-    private void clientConnect() throws IOException {
+    public void clientConnect() throws IOException {
         input = serverSocket.accept();
         ClientHandler clientHandler = new ClientHandler(input);
         new Thread(clientHandler).start();
+        saveClientLink(clientHandler);
         System.out.println("Client connect");
+    }
+
+    private void saveClientLink(ClientHandler clientHandler){
+        handlers.put(clientHandler.getPort(),clientHandler);
+    }
+
+    public static void removeClientLink(int port){
+        handlers.remove(port);
     }
 
 }

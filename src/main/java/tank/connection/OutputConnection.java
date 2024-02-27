@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
-public class OutputConnection extends Thread {
+public class OutputConnection extends Thread implements Connection{
     private static int PORT = 8002;
     private ServerSocket serverSocket;
     private Socket output;
+    private static Map<Integer,ClientSender> handlers = new HashMap<>();
 
     @Override
     public void run() {
@@ -39,10 +42,18 @@ public class OutputConnection extends Thread {
 
     }
 
-    private void clientConnect() throws IOException {
+    public void clientConnect() throws IOException {
         output = serverSocket.accept();
         ClientSender clientSender = new ClientSender(output);
         new Thread(clientSender).start();
+        saveClientLink(clientSender);
         System.out.println("Client connect");
+    }
+    private void saveClientLink(ClientSender clientSender){
+        handlers.put(clientSender.getPort(),clientSender);
+    }
+
+    public static void removeClientLink(int port){
+        handlers.remove(port);
     }
 }
