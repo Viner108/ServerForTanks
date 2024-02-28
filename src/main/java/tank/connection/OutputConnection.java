@@ -1,7 +1,9 @@
 package tank.connection;
 
+import tank.event.TankDto;
+import tank.server.ServerThread;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -11,7 +13,9 @@ public class OutputConnection extends Thread implements Connection{
     private static int PORT = 8002;
     private ServerSocket serverSocket;
     private Socket output;
-    private static Map<Integer,ClientSender> handlers = new HashMap<>();
+    public static Map<Integer,ClientSender> handlers = new HashMap<>();
+    public static TankDto tankDto;
+
 
     @Override
     public void run() {
@@ -45,8 +49,9 @@ public class OutputConnection extends Thread implements Connection{
     public void clientConnect() throws IOException {
         output = serverSocket.accept();
         ClientSender clientSender = new ClientSender(output);
-        new Thread(clientSender).start();
         saveClientLink(clientSender);
+        ServerThread serverThread = new ServerThread(clientSender);
+        serverThread.start();
         System.out.println("Client connect");
     }
     private void saveClientLink(ClientSender clientSender){
@@ -56,4 +61,6 @@ public class OutputConnection extends Thread implements Connection{
     public static void removeClientLink(int port){
         handlers.remove(port);
     }
+
+
 }

@@ -1,32 +1,29 @@
 package tank.connection;
 
-import tank.event.KeyEventDto;
+import tank.objectStream.MyObjectOutputStream;
+import tank.event.TankDto;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class ClientSender extends Thread {
+public class ClientSender {
     private Socket clientSocket;
-
     public ClientSender(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
-    @Override
-    public void run() {
+    public void writeTank(TankDto tankDto) {
         try {
             OutputStream outputStream = clientSocket.getOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            int i = 0;
-            while (true) {
-                KeyEventDto keyEventDto = new KeyEventDto();
-                keyEventDto.setKeyCode(i);
-                objectOutputStream.writeObject(keyEventDto);
-                i++;
-                Thread.sleep(1000);
+            ObjectOutputStream objectOutputStream = new MyObjectOutputStream(outputStream);
+            if (tankDto != null) {
+                synchronized (objectOutputStream) {
+                    objectOutputStream.writeObject(new TankDto());
+                }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             try {
                 System.out.println("Client disconnect");
                 clientSocket.close();
@@ -36,7 +33,8 @@ public class ClientSender extends Thread {
             }
         }
     }
-    public int getPort(){
+
+    public int getPort() {
         return clientSocket.getPort();
     }
 }

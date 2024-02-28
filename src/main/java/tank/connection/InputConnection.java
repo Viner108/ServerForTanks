@@ -1,18 +1,19 @@
 package tank.connection;
 
+import tank.event.TankDto;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class InputConnection extends Thread implements Connection{
     private static int PORT = 8001;
     private ServerSocket serverSocket;
     private Socket input;
-    private static Map<Integer,ClientHandler> handlers = new HashMap<>();
+    public static Map<Integer,ClientHandler> handlers = new HashMap<>();
+    public TankDto tankDto;
 
     @Override
     public void run() {
