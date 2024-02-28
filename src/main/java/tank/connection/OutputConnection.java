@@ -32,13 +32,13 @@ public class OutputConnection extends Thread implements Connection{
 
     public void startConnection() {
         try {
-            System.out.println("Start");
+            System.out.println("Start OutputConnection");
             serverSocket = new ServerSocket(PORT);
             clientConnect();
         } catch (Exception e) {
             try {
                 Thread.sleep(500);
-                System.out.println("Try connection");
+                System.out.println("Try connection by OutputConnection");
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -50,9 +50,9 @@ public class OutputConnection extends Thread implements Connection{
         output = serverSocket.accept();
         ClientSender clientSender = new ClientSender(output);
         saveClientLink(clientSender);
-        ServerThread serverThread = new ServerThread(clientSender);
+        ServerThread serverThread = new ServerThread(clientSender,this);
         serverThread.start();
-        System.out.println("Client connect");
+        System.out.println("Client connect by OutputConnection");
     }
     private void saveClientLink(ClientSender clientSender){
         handlers.put(clientSender.getPort(),clientSender);
@@ -61,6 +61,7 @@ public class OutputConnection extends Thread implements Connection{
     public static void removeClientLink(int port){
         handlers.remove(port);
     }
+
 
 
 }

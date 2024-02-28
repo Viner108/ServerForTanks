@@ -12,8 +12,8 @@ public class TankApplication {
         InputConnection inputConnection = new InputConnection();
         inputConnection.start();
 ////
-//        OutputConnection outputConnection = new OutputConnection();
-//        outputConnection.start();
+        OutputConnection outputConnection = new OutputConnection();
+        outputConnection.start();
 
 
     }

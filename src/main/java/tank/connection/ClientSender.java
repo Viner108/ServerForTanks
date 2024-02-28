@@ -1,5 +1,6 @@
 package tank.connection;
 
+import tank.event.ChangeTank;
 import tank.objectStream.MyObjectOutputStream;
 import tank.event.TankDto;
 
@@ -10,6 +11,7 @@ import java.net.Socket;
 
 public class ClientSender {
     private Socket clientSocket;
+    private ChangeTank changeTank=new ChangeTank();
     public ClientSender(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
@@ -18,14 +20,15 @@ public class ClientSender {
         try {
             OutputStream outputStream = clientSocket.getOutputStream();
             ObjectOutputStream objectOutputStream = new MyObjectOutputStream(outputStream);
-            if (tankDto != null) {
+            if (tankDto != null&& tankDto != this.changeTank.tankDto) {
                 synchronized (objectOutputStream) {
-                    objectOutputStream.writeObject(new TankDto());
+                    objectOutputStream.writeObject(tankDto);
+                    changeTank.tankDto=OutputConnection.tankDto;
                 }
             }
         } catch (IOException e) {
             try {
-                System.out.println("Client disconnect");
+                System.out.println("ClientOutput disconnect");
                 clientSocket.close();
                 OutputConnection.removeClientLink(getPort());
             } catch (Exception ex) {

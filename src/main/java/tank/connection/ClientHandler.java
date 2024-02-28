@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable {
             }
         } catch (Exception e) {
             try {
-                System.out.println("Client disconnect");
+                System.out.println("ClientInput disconnect");
                 clientSocket.close();
                 InputConnection.removeClientLink(getPort());
             } catch (Exception ex) {

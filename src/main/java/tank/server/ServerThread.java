@@ -8,14 +8,19 @@ public class ServerThread extends Thread {
     ClientSender clientSender;
 
 
-    public ServerThread(ClientSender clientSender) {
+    public ServerThread(ClientSender clientSender, OutputConnection outputConnection) {
+        this.outputConnection =outputConnection;
         this.clientSender = clientSender;
     }
 
     @Override
     public void run() {
         while (true){
+            if(OutputConnection.handlers.get(clientSender.getPort())==clientSender){
             clientSender.writeTank(OutputConnection.tankDto);
+            }else {
+                break;
+            }
         }
     }
 }

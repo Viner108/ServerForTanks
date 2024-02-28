@@ -30,13 +30,13 @@ public class InputConnection extends Thread implements Connection{
 
     public void startConnection() {
         try {
-            System.out.println("Start");
+            System.out.println("Start InputConnection");
             serverSocket = new ServerSocket(PORT);
             clientConnect();
         } catch (Exception e) {
             try {
                 Thread.sleep(500);
-                System.out.println("Try connection");
+                System.out.println("Try connection by InputConnection");
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -49,7 +49,7 @@ public class InputConnection extends Thread implements Connection{
         ClientHandler clientHandler = new ClientHandler(input);
         new Thread(clientHandler).start();
         saveClientLink(clientHandler);
-        System.out.println("Client connect");
+        System.out.println("Client connect by InputConnection");
     }
 
     private void saveClientLink(ClientHandler clientHandler){
