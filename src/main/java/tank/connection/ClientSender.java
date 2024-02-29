@@ -23,8 +23,8 @@ public class ClientSender {
             if (tankDto != null&& tankDto != this.changeTank.tankDto) {
                 synchronized (objectOutputStream) {
                     objectOutputStream.writeObject(tankDto);
-                    changeTank.tankDto=OutputConnection.tankDto;
                 }
+                changeTank.tankDto=OutputConnection.tankDto;
             }
         } catch (IOException e) {
             try {

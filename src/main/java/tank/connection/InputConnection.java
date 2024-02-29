@@ -13,8 +13,6 @@ public class InputConnection extends Thread implements Connection{
     private ServerSocket serverSocket;
     private Socket input;
     public static Map<Integer,ClientHandler> handlers = new HashMap<>();
-    public TankDto tankDto;
-
     @Override
     public void run() {
         startConnection();

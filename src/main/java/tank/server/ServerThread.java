@@ -16,7 +16,7 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         while (true){
-            if(OutputConnection.handlers.get(clientSender.getPort())==clientSender){
+            if(OutputConnection.handlers.get(clientSender.getPort())!=null){
             clientSender.writeTank(OutputConnection.tankDto);
             }else {
                 break;
