@@ -23,7 +23,7 @@ public class TankDto implements Serializable {
     }
 
     public void move(){
-        X=X+1;
+        X=X+10;
     }
 
     @Override

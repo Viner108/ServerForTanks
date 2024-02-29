@@ -11,7 +11,6 @@ import java.net.Socket;
 
 public class ClientSender {
     private Socket clientSocket;
-    private ChangeTank changeTank=new ChangeTank();
     public ClientSender(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
@@ -20,11 +19,10 @@ public class ClientSender {
         try {
             OutputStream outputStream = clientSocket.getOutputStream();
             ObjectOutputStream objectOutputStream = new MyObjectOutputStream(outputStream);
-            if (tankDto != null&& tankDto != this.changeTank.tankDto) {
+            if (tankDto != null) {
                 synchronized (objectOutputStream) {
                     objectOutputStream.writeObject(tankDto);
                 }
-                changeTank.tankDto=OutputConnection.tankDto;
             }
         } catch (IOException e) {
             try {

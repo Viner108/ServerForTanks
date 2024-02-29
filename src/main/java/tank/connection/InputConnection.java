@@ -1,7 +1,5 @@
 package tank.connection;
 
-import tank.event.TankDto;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

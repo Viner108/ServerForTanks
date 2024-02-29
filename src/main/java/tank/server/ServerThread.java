@@ -18,6 +18,11 @@ public class ServerThread extends Thread {
         while (true){
             if(OutputConnection.handlers.get(clientSender.getPort())!=null){
             clientSender.writeTank(OutputConnection.tankDto);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }else {
                 break;
             }
