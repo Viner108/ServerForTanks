@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable {
                     KeyEventDto keyEventDto = (KeyEventDto) object;
                     if (keyEventDto.getKeyCode()!=0) {
                         if (keyEventDto.isPress()) {
-                            keyPressed();
+                            keyPressed(keyEventDto);
                         } else {
                             keyReleased();
                         }
@@ -49,8 +49,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void keyPressed() {
-        tankDto.move();
+    public void keyPressed(KeyEventDto e) {
+        tankDto.move(e);
         OutputConnection.tankDto = tankDto;
     }
 

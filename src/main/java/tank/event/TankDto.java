@@ -1,5 +1,6 @@
 package tank.event;
 
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
 
 public class TankDto implements Serializable {
@@ -22,8 +23,24 @@ public class TankDto implements Serializable {
         Y = y;
     }
 
-    public void move(){
-        X=X+10;
+    public void move(KeyEventDto e){
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W: {
+                X=X+10;
+                break;
+            }
+            case KeyEvent.VK_S: {
+                X=X-10;
+                break;
+            }case KeyEvent.VK_A: {
+                Y=Y-10;
+                break;
+            }
+            case KeyEvent.VK_D: {
+                Y=Y+10;
+                break;
+            }
+        }
     }
 
     @Override
