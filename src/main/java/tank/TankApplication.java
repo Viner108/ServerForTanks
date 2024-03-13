@@ -1,6 +1,8 @@
 package tank;
 
+import tank.connection.FullConnection;
 import tank.connection.InputConnection;
+import tank.connection.ListFullConnection;
 import tank.connection.OutputConnection;
 import tank.event.TankDto;
 
@@ -9,11 +11,8 @@ import java.io.*;
 public class TankApplication {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        InputConnection inputConnection = new InputConnection();
-        inputConnection.start();
-////
-        OutputConnection outputConnection = new OutputConnection();
-        outputConnection.start();
+        ListFullConnection listFullConnection = new ListFullConnection();
+        listFullConnection.start();
 
 
     }

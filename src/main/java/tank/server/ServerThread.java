@@ -1,23 +1,25 @@
 package tank.server;
 
-import tank.connection.ClientSender;
+import tank.connection.ListFullConnection;
 import tank.connection.OutputConnection;
+
+import java.net.Socket;
 
 public class ServerThread extends Thread {
     OutputConnection outputConnection;
-    ClientSender clientSender;
+    Socket socket;
 
 
-    public ServerThread(ClientSender clientSender, OutputConnection outputConnection) {
+    public ServerThread( OutputConnection outputConnection, Socket socket) {
         this.outputConnection =outputConnection;
-        this.clientSender = clientSender;
+        this.socket = socket;
     }
 
     @Override
     public void run() {
         while (true){
-            if(OutputConnection.handlers.get(clientSender.getPort())!=null){
-            clientSender.writeTank(OutputConnection.tankDto);
+            if(ListFullConnection.listFullConnection.size() != 0){
+            outputConnection.writeTank(OutputConnection.tanks);
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {

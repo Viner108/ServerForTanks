@@ -1,59 +1,74 @@
 package tank.connection;
 
+import tank.event.KeyEventDto;
+import tank.event.TankDto;
+import tank.objectStream.MyObjectInputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputConnection extends Thread implements Connection{
-    private static int PORT = 8001;
-    private ServerSocket serverSocket;
+public class InputConnection extends Thread {
     private Socket input;
-    public static Map<Integer,ClientHandler> handlers = new HashMap<>();
+
+    public TankDto tankDto;
+
+    public InputConnection(Socket input) {
+        this.input = input;
+        this.tankDto = new TankDto(input.getPort());
+    }
+
     @Override
     public void run() {
-        startConnection();
-        while (true) {
-            try {
-                Thread.sleep(500);
-                clientConnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void startConnection() {
         try {
-            System.out.println("Start InputConnection");
-            serverSocket = new ServerSocket(PORT);
-            clientConnect();
-        } catch (Exception e) {
-            try {
-                Thread.sleep(500);
-                System.out.println("Try connection by InputConnection");
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            InputStream inputStream = input.getInputStream();
+            ObjectInputStream objectInputStream = new MyObjectInputStream(inputStream);
+            while (true) {
+                try {
+                    Object object = objectInputStream.readObject();
+                    KeyEventDto keyEventDto = (KeyEventDto) object;
+                    if (keyEventDto.getKeyCode() != 0) {
+                        if (keyEventDto.isPress()) {
+                            keyPressed(keyEventDto);
+                        } else {
+                            keyReleased();
+                        }
+                        System.out.println(keyEventDto.toString());
+                        System.out.println(tankDto.toString());
+                    }
+                } catch (StreamCorruptedException e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (Exception e) {
+            System.out.println("ClientInput disconnect");
+            close();
+            ListFullConnection.removeFullConnection(this);
+            OutputConnection.tanks.remove(tankDto.getId(),tankDto);
         }
+    }
+
+    public void close() {
+        try {
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void keyPressed(KeyEventDto e) {
+        tankDto.move(e);
+        OutputConnection.tanks.put(tankDto.getId(), tankDto);
+    }
+
+    public void keyReleased() {
 
     }
 
-    public void clientConnect() throws IOException {
-        input = serverSocket.accept();
-        ClientHandler clientHandler = new ClientHandler(input);
-        new Thread(clientHandler).start();
-        saveClientLink(clientHandler);
-        System.out.println("Client connect by InputConnection");
-    }
-
-    private void saveClientLink(ClientHandler clientHandler){
-        handlers.put(clientHandler.getPort(),clientHandler);
-    }
-
-    public static void removeClientLink(int port){
-        handlers.remove(port);
-    }
 
 }

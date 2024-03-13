@@ -1,67 +1,56 @@
 package tank.connection;
 
 import tank.event.TankDto;
-import tank.server.ServerThread;
+import tank.objectStream.MyObjectOutputStream;
 
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OutputConnection extends Thread implements Connection{
-    private static int PORT = 8002;
-    private ServerSocket serverSocket;
+public class OutputConnection extends Thread {
     private Socket output;
-    public static Map<Integer,ClientSender> handlers = new HashMap<>();
-    public static TankDto tankDto;
+    public static Map<Integer, TankDto> tanks = new HashMap<>();
 
+    private boolean isConnection=true;
+    public OutputConnection(Socket output) {
+        this.output = output;
+    }
 
     @Override
     public void run() {
-        startConnection();
-        while (true) {
-            try {
-                Thread.sleep(500);
-                clientConnect();
-            } catch (Exception e) {
-                e.printStackTrace();
+        while (isConnection) {
+            if (ListFullConnection.listFullConnection.size() != 0 ) {
+                    writeTank(tanks);
             }
         }
     }
 
-    public void startConnection() {
+    public void writeTank(Map<Integer, TankDto> tanks){
         try {
-            System.out.println("Start OutputConnection");
-            serverSocket = new ServerSocket(PORT);
-            clientConnect();
-        } catch (Exception e) {
-            try {
-                Thread.sleep(500);
-                System.out.println("Try connection by OutputConnection");
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            OutputStream outputStream = output.getOutputStream();
+            ObjectOutputStream objectOutputStream = new MyObjectOutputStream(outputStream);
+            if (tanks.size() != 0) {
+                synchronized (objectOutputStream) {
+                    objectOutputStream.writeObject(tanks);
+                }
             }
+        } catch (IOException e) {
+            System.out.println("ClientOutput disconnect");
+            ListFullConnection.removeFullConnection(this);
+            close();
+            isConnection=false;
         }
-
     }
 
-    public void clientConnect() throws IOException {
-        output = serverSocket.accept();
-        ClientSender clientSender = new ClientSender(output);
-        saveClientLink(clientSender);
-        ServerThread serverThread = new ServerThread(clientSender,this);
-        serverThread.start();
-        System.out.println("Client connect by OutputConnection");
+    public void close() {
+        try {
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    private void saveClientLink(ClientSender clientSender){
-        handlers.put(clientSender.getPort(),clientSender);
-    }
-
-    public static void removeClientLink(int port){
-        handlers.remove(port);
-    }
-
-
 
 }
