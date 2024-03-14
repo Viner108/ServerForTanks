@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public class InputConnection extends Thread {
     private Socket input;
@@ -58,6 +55,7 @@ public class InputConnection extends Thread {
             }
         } catch (Exception e) {
             System.out.println("ClientInput disconnect");
+        }finally {
             close();
             ListFullConnection.removeFullConnection(this);
             OutputConnection.tanks.remove(tankDto.getId(),tankDto);

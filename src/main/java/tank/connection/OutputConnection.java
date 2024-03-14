@@ -49,6 +49,7 @@ public class OutputConnection extends Thread {
             }
         } catch (IOException e) {
             System.out.println("ClientOutput disconnect");
+        }finally {
             ListFullConnection.removeFullConnection(this);
             close();
             isConnection=false;

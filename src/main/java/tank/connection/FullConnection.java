@@ -1,8 +1,5 @@
 package tank.connection;
 
-import java.net.ServerSocket;
-import java.net.Socket;
-
 public class FullConnection {
     InputConnection inputConnection;
     OutputConnection outputConnection;
