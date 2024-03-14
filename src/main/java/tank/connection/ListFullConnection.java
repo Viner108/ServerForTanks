@@ -1,6 +1,8 @@
 package tank.connection;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -65,25 +67,39 @@ public class ListFullConnection extends Thread {
     }
 
     public static void removeFullConnection(InputConnection inputConnection) {
-        listFullConnection.stream()
-                .filter(fullConnection -> fullConnection.inputConnection==inputConnection)
-                .findFirst()
-                .ifPresent(fullConnectionForRemove -> {
-                    fullConnectionForRemove.inputConnection.close();
-                    fullConnectionForRemove.outputConnection.close();
-                    listFullConnection.remove(fullConnectionForRemove);
-                });
+        FullConnection fullConnectionForRemove = null;
+        for (FullConnection fullConnection : listFullConnection) {
+            if (fullConnection.inputConnection == inputConnection) {
+                fullConnectionForRemove = fullConnection;
+            }
+        }
+        if (fullConnectionForRemove != null) {
+            try {
+                fullConnectionForRemove.inputConnection.input.close();
+                fullConnectionForRemove.outputConnection.output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            listFullConnection.remove(fullConnectionForRemove);
+        }
     }
 
     public static void removeFullConnection(OutputConnection outputConnection) {
-        listFullConnection.stream()
-                .filter(fullConnection -> fullConnection.outputConnection==outputConnection)
-                .findFirst()
-                .ifPresent(fullConnectionForRemove -> {
-                    fullConnectionForRemove.inputConnection.close();
-                    fullConnectionForRemove.outputConnection.close();
-                    listFullConnection.remove(fullConnectionForRemove);
-                });
+        FullConnection fullConnectionForRemove = null;
+        for (FullConnection fullConnection : listFullConnection) {
+            if (fullConnection.outputConnection == outputConnection) {
+                fullConnectionForRemove = fullConnection;
+            }
+        }
+        if (fullConnectionForRemove != null) {
+            try {
+                fullConnectionForRemove.inputConnection.input.close();
+                fullConnectionForRemove.outputConnection.output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            listFullConnection.remove(fullConnectionForRemove);
+        }
     }
 
 }

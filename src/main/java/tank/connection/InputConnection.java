@@ -11,7 +11,7 @@ import java.io.StreamCorruptedException;
 import java.net.Socket;
 
 public class InputConnection extends Thread {
-    private Socket input;
+    public Socket input;
 
     public TankDto tankDto;
     InputStream inputStream;
@@ -25,7 +25,7 @@ public class InputConnection extends Thread {
             objectInputStream = new MyObjectInputStream(inputStream);
         } catch (IOException e) {
             System.out.println("ClientInput disconnect");
-            close();
+            closeInput();
             ListFullConnection.removeFullConnection(this);
             OutputConnection.tanks.remove(tankDto.getId(),tankDto);
         }
@@ -56,18 +56,18 @@ public class InputConnection extends Thread {
         } catch (Exception e) {
             System.out.println("ClientInput disconnect");
         }finally {
-            close();
+            closeInput();
             ListFullConnection.removeFullConnection(this);
             OutputConnection.tanks.remove(tankDto.getId(),tankDto);
         }
     }
 
-    public void close() {
+    public void closeInput() {
         try {
             objectInputStream.close();
             inputStream.close();
             input.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
