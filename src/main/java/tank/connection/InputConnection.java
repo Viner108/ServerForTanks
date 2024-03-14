@@ -17,10 +17,21 @@ public class InputConnection extends Thread {
     private Socket input;
 
     public TankDto tankDto;
+    InputStream inputStream;
+    ObjectInputStream objectInputStream;
 
     public InputConnection(Socket input) {
         this.input = input;
         this.tankDto = new TankDto(input.getPort());
+        try {
+            inputStream = input.getInputStream();
+            objectInputStream = new MyObjectInputStream(inputStream);
+        } catch (IOException e) {
+            System.out.println("ClientInput disconnect");
+            close();
+            ListFullConnection.removeFullConnection(this);
+            OutputConnection.tanks.remove(tankDto.getId(),tankDto);
+        }
     }
 
     @Override
@@ -55,6 +66,8 @@ public class InputConnection extends Thread {
 
     public void close() {
         try {
+            objectInputStream.close();
+            inputStream.close();
             input.close();
         } catch (IOException e) {
             e.printStackTrace();

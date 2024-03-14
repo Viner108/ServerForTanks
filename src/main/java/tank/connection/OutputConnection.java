@@ -15,8 +15,20 @@ public class OutputConnection extends Thread {
     public static Map<Integer, TankDto> tanks = new HashMap<>();
 
     private boolean isConnection=true;
+
+    OutputStream outputStream;
+    ObjectOutputStream objectOutputStream;
     public OutputConnection(Socket output) {
         this.output = output;
+        try {
+            outputStream = output.getOutputStream();
+            objectOutputStream = new MyObjectOutputStream(outputStream);
+        } catch (IOException e) {
+            System.out.println("ClientOutput disconnect");
+            ListFullConnection.removeFullConnection(this);
+            close();
+            isConnection=false;
+        }
     }
 
     @Override
@@ -30,8 +42,6 @@ public class OutputConnection extends Thread {
 
     public void writeTank(Map<Integer, TankDto> tanks){
         try {
-            OutputStream outputStream = output.getOutputStream();
-            ObjectOutputStream objectOutputStream = new MyObjectOutputStream(outputStream);
             if (tanks.size() != 0) {
                 synchronized (objectOutputStream) {
                     objectOutputStream.writeObject(tanks);
@@ -47,6 +57,8 @@ public class OutputConnection extends Thread {
 
     public void close() {
         try {
+            objectOutputStream.close();
+            outputStream.close();
             output.close();
         } catch (IOException e) {
             e.printStackTrace();
