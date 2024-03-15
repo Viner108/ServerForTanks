@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ListFullConnection extends Thread {
     ServerSocket serverSocketOutput;
@@ -12,6 +14,11 @@ public class ListFullConnection extends Thread {
     private static int PORT_INPUT = 8001;
     private static int PORT_OUTPUT = 8002;
     public static List<FullConnection> listFullConnection = new ArrayList<>();
+    private ExecutorService executorService;
+
+    public ListFullConnection( ) {
+        this.executorService = Executors.newFixedThreadPool(2);
+    }
 
     @Override
     public void run() {
@@ -21,6 +28,7 @@ public class ListFullConnection extends Thread {
                 creatFullConnection();
             } catch (IOException e) {
                 e.printStackTrace();
+                executorService.shutdown();
             }
         }
     }
@@ -44,10 +52,12 @@ public class ListFullConnection extends Thread {
     public void creatFullConnection() throws IOException {
         OutputConnection outputConnection = getOutputConnection();
         InputConnection inputConnection = getInputConnection();
-        FullConnection fullConnection = new FullConnection(inputConnection, outputConnection);
-        listFullConnection.add(fullConnection);
-        inputConnection.start();
-        outputConnection.start();
+//        FullConnection fullConnection = new FullConnection(inputConnection, outputConnection);
+        executorService.submit(inputConnection);
+        executorService.submit(outputConnection);
+//        listFullConnection.add(fullConnection);
+//        inputConnection.start();
+//        outputConnection.start();
     }
 
     private OutputConnection getOutputConnection() throws IOException {

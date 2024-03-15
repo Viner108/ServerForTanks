@@ -9,10 +9,11 @@ import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 
-public class InputConnection extends Thread {
+public class InputConnection implements Runnable {
     public Socket input;
 
     public TankDto tankDto;
+
     public InputConnection(Socket input) {
         this.input = input;
         this.tankDto = new TankDto(input.getPort());
@@ -21,7 +22,7 @@ public class InputConnection extends Thread {
     @Override
     public void run() {
         try (InputStream inputStream = input.getInputStream();
-             ObjectInputStream objectInputStream = new MyObjectInputStream(inputStream);) {
+             ObjectInputStream objectInputStream = new MyObjectInputStream(inputStream)) {
             while (true) {
                 try {
                     Object object = objectInputStream.readObject();
@@ -43,6 +44,7 @@ public class InputConnection extends Thread {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
+            OutputConnection.isConnection.set(false);
             ListFullConnection.removeFullConnection(this);
             OutputConnection.tanks.remove(tankDto.getId(), tankDto);
         }
@@ -59,6 +61,7 @@ public class InputConnection extends Thread {
     public void keyPressed(KeyEventDto e) {
         tankDto.move(e);
         OutputConnection.tanks.put(tankDto.getId(), tankDto);
+
     }
 
     public void keyReleased() {

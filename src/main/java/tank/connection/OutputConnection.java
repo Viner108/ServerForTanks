@@ -11,25 +11,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class OutputConnection extends Thread {
+public class OutputConnection implements Runnable{
     public Socket output;
     public static Map<Integer, TankDto> tanks = new HashMap<>();
-    private AtomicBoolean isConnection = new AtomicBoolean(true);
+    public static AtomicBoolean isConnection = new AtomicBoolean(true);
     OutputStream outputStream;
     ObjectOutputStream objectOutputStream;
 
     public OutputConnection(Socket output) {
         this.output = output;
+        isConnection.set(true);
     }
 
     @Override
     public void run() {
         try {
             while (isConnection.get() && !output.isClosed()) {
-                if (ListFullConnection.listFullConnection.size() != 0) {
+//                if (ListFullConnection.listFullConnection.size() != 0) {
                     writeTank(tanks);
                     Thread.sleep(100);
-                }
+//                }
             }
         } catch (Exception e) {
             closeOut();
@@ -51,15 +52,15 @@ public class OutputConnection extends Thread {
         }
     }
 
-        public void closeOut() {
-            System.out.println("ClientOutput disconnect");
-            ListFullConnection.removeFullConnection(this);
-            isConnection.set(false);
-            try {
-                output.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public void closeOut() {
+        System.out.println("ClientOutput disconnect");
+        ListFullConnection.removeFullConnection(this);
+        isConnection.set(false);
+        try {
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
+
+}
