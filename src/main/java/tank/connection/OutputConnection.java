@@ -3,7 +3,6 @@ package tank.connection;
 import tank.event.TankDto;
 import tank.objectStream.MyObjectOutputStream;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -14,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class OutputConnection implements Runnable{
     public Socket output;
     public static Map<Integer, TankDto> tanks = new HashMap<>();
-    public static AtomicBoolean isConnection = new AtomicBoolean(true);
+    public AtomicBoolean isConnection = new AtomicBoolean(true);
     OutputStream outputStream;
     ObjectOutputStream objectOutputStream;
 
@@ -27,10 +26,8 @@ public class OutputConnection implements Runnable{
     public void run() {
         try {
             while (isConnection.get() && !output.isClosed()) {
-//                if (ListFullConnection.listFullConnection.size() != 0) {
                     writeTank(tanks);
                     Thread.sleep(100);
-//                }
             }
         } catch (Exception e) {
             closeOut();
@@ -46,6 +43,8 @@ public class OutputConnection implements Runnable{
                 synchronized (objectOutputStream) {
                     objectOutputStream.writeObject(tanks);
                 }
+            }else {
+                closeOut();
             }
         } catch (Exception e) {
             closeOut();
@@ -54,7 +53,6 @@ public class OutputConnection implements Runnable{
 
     public void closeOut() {
         System.out.println("ClientOutput disconnect");
-        ListFullConnection.removeFullConnection(this);
         isConnection.set(false);
         try {
             output.close();

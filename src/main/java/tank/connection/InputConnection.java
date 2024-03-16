@@ -17,6 +17,7 @@ public class InputConnection implements Runnable {
     public InputConnection(Socket input) {
         this.input = input;
         this.tankDto = new TankDto(input.getPort());
+        OutputConnection.tanks.put(tankDto.getId(), tankDto);
     }
 
     @Override
@@ -44,8 +45,6 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
-            OutputConnection.isConnection.set(false);
-            ListFullConnection.removeFullConnection(this);
             OutputConnection.tanks.remove(tankDto.getId(), tankDto);
         }
     }
