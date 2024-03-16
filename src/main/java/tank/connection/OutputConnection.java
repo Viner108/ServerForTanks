@@ -3,6 +3,7 @@ package tank.connection;
 import tank.event.TankDto;
 import tank.objectStream.MyObjectOutputStream;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -10,15 +11,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class OutputConnection implements Runnable{
+public class OutputConnection implements Runnable {
     public Socket output;
     public static Map<Integer, TankDto> tanks = new HashMap<>();
     public AtomicBoolean isConnection = new AtomicBoolean(true);
     OutputStream outputStream;
     ObjectOutputStream objectOutputStream;
 
-    public OutputConnection(Socket output) {
+    public OutputConnection(Socket output,ObjectOutputStream objectOutputStream) {
         this.output = output;
+        this.objectOutputStream = objectOutputStream;
         isConnection.set(true);
     }
 
@@ -26,8 +28,8 @@ public class OutputConnection implements Runnable{
     public void run() {
         try {
             while (isConnection.get() && !output.isClosed()) {
-                    writeTank(tanks);
-                    Thread.sleep(100);
+                writeTank(tanks);
+                Thread.sleep(100);
             }
         } catch (Exception e) {
             closeOut();
@@ -37,11 +39,10 @@ public class OutputConnection implements Runnable{
 
     public void writeTank(Map<Integer, TankDto> tanks) {
         try {
-            outputStream = output.getOutputStream();
-            objectOutputStream = new MyObjectOutputStream(outputStream);
             if (tanks.size() != 0) {
-                synchronized (objectOutputStream) {
-                    objectOutputStream.writeObject(tanks);
+                for (TankDto tankDto : tanks.values()) {
+                    objectOutputStream.writeObject(tankDto);
+                    objectOutputStream.reset();
                 }
             }else {
                 closeOut();

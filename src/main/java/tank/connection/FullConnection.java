@@ -1,6 +1,10 @@
 package tank.connection;
 
+
+import tank.objectStream.MyObjectOutputStream;
+
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -56,7 +60,8 @@ public class FullConnection extends Thread {
     private OutputConnection getOutputConnection() throws IOException {
         Socket output = serverSocketOutput.accept();
         System.out.println("Created OutputConnection");
-        OutputConnection outputConnection = new OutputConnection(output);
+        ObjectOutputStream objectOutputStream = new MyObjectOutputStream(output.getOutputStream());
+        OutputConnection outputConnection = new OutputConnection(output,objectOutputStream);
         return outputConnection;
     }
 
