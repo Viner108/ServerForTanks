@@ -45,6 +45,11 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
+            FullConnection.list.forEach(outputAndInputConnection ->{
+                if(outputAndInputConnection.inputConnection==this){
+                    outputAndInputConnection.outputConnection.closeOut();
+                }
+            });
             OutputConnection.tanks.remove(tankDto.getId(), tankDto);
         }
     }

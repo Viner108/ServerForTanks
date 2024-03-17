@@ -15,7 +15,6 @@ public class OutputConnection implements Runnable {
     public Socket output;
     public static Map<Integer, TankDto> tanks = new HashMap<>();
     public AtomicBoolean isConnection = new AtomicBoolean(true);
-    OutputStream outputStream;
     ObjectOutputStream objectOutputStream;
 
     public OutputConnection(Socket output,ObjectOutputStream objectOutputStream) {
@@ -32,6 +31,7 @@ public class OutputConnection implements Runnable {
                 Thread.sleep(100);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             closeOut();
         }
         closeOut();
@@ -48,6 +48,7 @@ public class OutputConnection implements Runnable {
                 closeOut();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             closeOut();
         }
     }
