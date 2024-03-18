@@ -14,9 +14,9 @@ import java.util.concurrent.Executors;
 
 public class FullConnection extends Thread {
     ServerSocket serverSocketOutput;
+    private static int PORT_OUTPUT = 8002;
     ServerSocket serverSocketInput;
     private static int PORT_INPUT = 8001;
-    private static int PORT_OUTPUT = 8002;
     private ExecutorService executorService;
     public static List<OutputAndInputConnection> list = new ArrayList<>();
 
@@ -59,7 +59,6 @@ public class FullConnection extends Thread {
         OutputAndInputConnection outputAndInputConnection = new OutputAndInputConnection(inputConnection,outputConnection);
         list.add(outputAndInputConnection);
         executorService.submit(inputConnection);
-        executorService.submit(outputConnection);
     }
 
     private OutputConnection getOutputConnection() throws IOException {

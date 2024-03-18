@@ -65,6 +65,11 @@ public class InputConnection implements Runnable {
     public void keyPressed(KeyEventDto e) {
         tankDto.move(e);
         OutputConnection.tanks.put(tankDto.getId(), tankDto);
+        FullConnection.list.forEach(outputAndInputConnection ->{
+            if(outputAndInputConnection.inputConnection==this){
+                outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
+            }
+        });
 
     }
 
