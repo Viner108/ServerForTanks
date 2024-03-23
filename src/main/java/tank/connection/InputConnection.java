@@ -45,8 +45,8 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
-            FullConnection.list.forEach(outputAndInputConnection ->{
-                if(outputAndInputConnection.inputConnection==this){
+            FullConnection.list.forEach(outputAndInputConnection -> {
+                if (outputAndInputConnection.inputConnection == this) {
                     outputAndInputConnection.outputConnection.closeOut();
                 }
             });
@@ -65,10 +65,8 @@ public class InputConnection implements Runnable {
     public void keyPressed(KeyEventDto e) {
         tankDto.move(e);
         OutputConnection.tanks.put(tankDto.getId(), tankDto);
-        FullConnection.list.forEach(outputAndInputConnection ->{
-            if(outputAndInputConnection.inputConnection==this){
-                outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
-            }
+        FullConnection.list.forEach(outputAndInputConnection -> {
+            outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
         });
 
     }

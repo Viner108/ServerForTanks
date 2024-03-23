@@ -6,8 +6,9 @@ import java.io.Serializable;
 public class TankDto implements Serializable {
     private static final long serialVersionUID = 8038539938717817115L;
     int id;
-    int X=0;
-    int Y=0;
+    int X = 0;
+    int Y = 0;
+    private int speed = 15;
 
     public TankDto(int id) {
         this.id = id;
@@ -37,21 +38,22 @@ public class TankDto implements Serializable {
         Y = y;
     }
 
-    public void move(KeyEventDto e){
+    public void move(KeyEventDto e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W: {
-                X=X+10;
+                X = X + speed;
                 break;
             }
             case KeyEvent.VK_S: {
-                X=X-10;
+                X = X - speed;
                 break;
-            }case KeyEvent.VK_A: {
-                Y=Y-10;
+            }
+            case KeyEvent.VK_A: {
+                Y = Y - speed;
                 break;
             }
             case KeyEvent.VK_D: {
-                Y=Y+10;
+                Y = Y + speed;
                 break;
             }
         }
