@@ -18,9 +18,10 @@ public class FullConnection extends Thread {
     ServerSocket serverSocketInput;
     private static int PORT_INPUT = 8001;
     private ExecutorService executorService;
+
     public static List<OutputAndInputConnection> list = new ArrayList<>();
 
-    public FullConnection( ) {
+    public FullConnection() {
         this.executorService = Executors.newCachedThreadPool();
     }
 
@@ -56,7 +57,7 @@ public class FullConnection extends Thread {
     public void creatFullConnection() throws IOException {
         OutputConnection outputConnection = getOutputConnection();
         InputConnection inputConnection = getInputConnection();
-        OutputAndInputConnection outputAndInputConnection = new OutputAndInputConnection(inputConnection,outputConnection);
+        OutputAndInputConnection outputAndInputConnection = new OutputAndInputConnection(inputConnection, outputConnection);
         list.add(outputAndInputConnection);
         executorService.submit(inputConnection);
     }
@@ -65,7 +66,7 @@ public class FullConnection extends Thread {
         Socket output = serverSocketOutput.accept();
         System.out.println("Created OutputConnection");
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(output.getOutputStream());
-        OutputConnection outputConnection = new OutputConnection(output,objectOutputStream);
+        OutputConnection outputConnection = new OutputConnection(output, objectOutputStream);
         return outputConnection;
     }
 

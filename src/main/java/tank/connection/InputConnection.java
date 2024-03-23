@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class InputConnection implements Runnable {
     public Socket input;
@@ -17,11 +18,12 @@ public class InputConnection implements Runnable {
     public InputConnection(Socket input) {
         this.input = input;
         this.tankDto = new TankDto(input.getPort());
-        OutputConnection.tanks.put(tankDto.getId(), tankDto);
+
     }
 
     @Override
     public void run() {
+        OutputConnection.tanks.put(tankDto.getId(), tankDto);
         try (InputStream inputStream = input.getInputStream();
              ObjectInputStream objectInputStream = new MyObjectInputStream(inputStream)) {
             while (true) {
@@ -45,12 +47,17 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
-            FullConnection.list.forEach(outputAndInputConnection -> {
-                if (outputAndInputConnection.inputConnection == this) {
-                    outputAndInputConnection.outputConnection.closeOut();
+            AtomicInteger id= new AtomicInteger(-1);
+            AtomicInteger count= new AtomicInteger(-1);
+            FullConnection.list.forEach(outputAndInputConnection1 -> {
+                count.getAndIncrement();
+                if (outputAndInputConnection1.inputConnection == this) {
+                    outputAndInputConnection1.outputConnection.closeOut();
+                    id.set(count.get());
                 }
             });
-            OutputConnection.tanks.remove(tankDto.getId(), tankDto);
+            FullConnection.list.remove(id.get());
+            OutputConnection.tanks.remove(tankDto.getId());
         }
     }
 
