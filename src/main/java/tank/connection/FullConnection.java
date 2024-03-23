@@ -28,6 +28,15 @@ public class FullConnection extends Thread {
     @Override
     public void run() {
         startConnection();
+            while (serverSocketOutput == null || serverSocketInput == null) {
+                try {
+                    Thread.sleep(500);
+                    System.out.println("Try connection by FullConnection");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                startConnection();
+            }
         while (true) {
             try {
                 creatFullConnection();
