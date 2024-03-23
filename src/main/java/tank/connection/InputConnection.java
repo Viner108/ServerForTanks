@@ -8,7 +8,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class InputConnection implements Runnable {
     public Socket input;
@@ -47,16 +48,17 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
-            AtomicInteger id= new AtomicInteger(-1);
-            AtomicInteger count= new AtomicInteger(-1);
             FullConnection.list.forEach(outputAndInputConnection1 -> {
-                count.getAndIncrement();
                 if (outputAndInputConnection1.inputConnection == this) {
                     outputAndInputConnection1.outputConnection.closeOut();
-                    id.set(count.get());
                 }
             });
-            FullConnection.list.remove(id.get());
+            for (Iterator<OutputAndInputConnection> iterator = FullConnection.list.iterator(); iterator.hasNext();) {
+                OutputAndInputConnection outputAndInputConnection = iterator.next();
+                if (outputAndInputConnection.inputConnection.equals(this)) {
+                    iterator.remove();
+                }
+            }
             OutputConnection.tanks.remove(tankDto.getId());
         }
     }
@@ -73,7 +75,9 @@ public class InputConnection implements Runnable {
         tankDto.move(e);
         OutputConnection.tanks.put(tankDto.getId(), tankDto);
         FullConnection.list.forEach(outputAndInputConnection -> {
-            outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
+            if (!outputAndInputConnection.outputConnection.output.isClosed()) {
+                outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
+            }
         });
 
     }
