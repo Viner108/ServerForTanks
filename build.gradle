@@ -8,6 +8,10 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+task run(type:JavaExec){
+    main = 'tank.TankApplication'
+    classpath = sourceSets.main.runtimeClasspath
+}
 jar {
     manifest {
         attributes 'Main-Class': 'tank.TankApplication'
