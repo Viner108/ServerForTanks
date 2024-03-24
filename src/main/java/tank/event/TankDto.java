@@ -8,10 +8,73 @@ public class TankDto implements Serializable {
     int id;
     int X = 0;
     int Y = 0;
-    private int speed = 15;
-
+    private int speed = 5;
+    public int alpha = 0;
+    int deltaX = 0;
+    int deltaY = 0;
+    int deltaAlpha = 0;
+    int speedAlpha = 1;
     public TankDto(int id) {
         this.id = id;
+    }
+
+    public void move() {
+        X = X + deltaX;
+        Y = Y + deltaY;
+        alpha = alpha + deltaAlpha;
+    }
+    public void keyEventPressed(KeyEventDto e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A: {
+                deltaAlpha = -speedAlpha;
+                break;
+            }
+            case KeyEvent.VK_D: {
+                deltaAlpha = speedAlpha;
+                break;
+            }
+            case KeyEvent.VK_W: {
+                deltaX = (int) (Math.cos(Math.toRadians(alpha)) * speed);
+                deltaY = (int) (Math.sin(Math.toRadians(alpha)) * speed);
+                break;
+            }
+            case KeyEvent.VK_S: {
+                deltaX = (int) (-Math.cos(Math.toRadians(alpha)) * speed);
+                deltaY = (int) (- Math.sin(Math.toRadians(alpha)) * speed);
+                break;
+            }
+        }
+    }
+    public void keyEventReleased(KeyEventDto e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_A: {
+                deltaAlpha = 0;
+                break;
+            }
+            case KeyEvent.VK_D: {
+                deltaAlpha = 0;
+                break;
+            }
+            case KeyEvent.VK_W: {
+                deltaX = 0;
+                deltaY = 0;
+                break;
+            }
+            case KeyEvent.VK_S: {
+                deltaX = 0;
+                deltaY = 0;
+                break;
+            }
+        }
+    }
+
+
+    @Override
+    public String toString() {
+        return "TankDto{" +
+               "X=" + X +
+               ", Y=" + Y +
+               '}';
     }
 
     public int getId() {
@@ -36,34 +99,5 @@ public class TankDto implements Serializable {
 
     public void setY(int y) {
         Y = y;
-    }
-
-    public void move(KeyEventDto e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W: {
-                X = X + speed;
-                break;
-            }
-            case KeyEvent.VK_S: {
-                X = X - speed;
-                break;
-            }
-            case KeyEvent.VK_A: {
-                Y = Y - speed;
-                break;
-            }
-            case KeyEvent.VK_D: {
-                Y = Y + speed;
-                break;
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "TankDto{" +
-               "X=" + X +
-               ", Y=" + Y +
-               '}';
     }
 }

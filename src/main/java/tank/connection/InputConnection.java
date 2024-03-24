@@ -35,7 +35,7 @@ public class InputConnection implements Runnable {
                         if (keyEventDto.isPress()) {
                             keyPressed(keyEventDto);
                         } else {
-                            keyReleased();
+                            keyReleased(keyEventDto);
                         }
                         System.out.println(keyEventDto.toString());
                         System.out.println(tankDto.toString());
@@ -53,7 +53,7 @@ public class InputConnection implements Runnable {
                     outputAndInputConnection1.outputConnection.closeOut();
                 }
             });
-            for (Iterator<OutputAndInputConnection> iterator = FullConnection.list.iterator(); iterator.hasNext();) {
+            for (Iterator<OutputAndInputConnection> iterator = FullConnection.list.iterator(); iterator.hasNext(); ) {
                 OutputAndInputConnection outputAndInputConnection = iterator.next();
                 if (outputAndInputConnection.inputConnection.equals(this)) {
                     iterator.remove();
@@ -72,7 +72,8 @@ public class InputConnection implements Runnable {
     }
 
     public void keyPressed(KeyEventDto e) {
-        tankDto.move(e);
+        tankDto.keyEventPressed(e);
+        tankDto.move();
         OutputConnection.tanks.put(tankDto.getId(), tankDto);
         FullConnection.list.forEach(outputAndInputConnection -> {
             if (!outputAndInputConnection.outputConnection.output.isClosed()) {
@@ -82,8 +83,14 @@ public class InputConnection implements Runnable {
 
     }
 
-    public void keyReleased() {
-
+    public void keyReleased(KeyEventDto e) {
+        tankDto.keyEventReleased(e);
+        OutputConnection.tanks.put(tankDto.getId(), tankDto);
+        FullConnection.list.forEach(outputAndInputConnection -> {
+            if (!outputAndInputConnection.outputConnection.output.isClosed()) {
+                outputAndInputConnection.outputConnection.writeTank(OutputConnection.tanks);
+            }
+        });
     }
 
 
