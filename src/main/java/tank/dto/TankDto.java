@@ -6,16 +6,16 @@ import java.io.Serializable;
 public class TankDto implements Serializable {
     private static final long serialVersionUID = 8038539938717817115L;
     int id;
-    int X = 0;
-    int Y = 0;
+    float X = 0;
+    float Y = 0;
     public static float TANK_HEIGHT = 109F;
     public static float TANK_WIDTH = 82F;
-    private int speed = 5;
-    public int alpha = 0;
-    int deltaX = 0;
-    int deltaY = 0;
-    int deltaAlpha = 0;
-    int speedAlpha = 1;
+    private float speed = 5;
+    public float alpha = 0;
+    float deltaX = 0;
+    float deltaY = 0;
+    float deltaAlpha = 0;
+    float speedAlpha = 3;
     public ToreDto tore;
     public TankDto(int id) {
         this.id = id;
@@ -39,13 +39,13 @@ public class TankDto implements Serializable {
                 break;
             }
             case KeyEvent.VK_W: {
-                deltaX = (int) (Math.cos(Math.toRadians(alpha)) * speed);
-                deltaY = (int) (Math.sin(Math.toRadians(alpha)) * speed);
+                deltaX = (float) (Math.cos(Math.toRadians(alpha)) * speed);
+                deltaY = (float) (Math.sin(Math.toRadians(alpha)) * speed);
                 break;
             }
             case KeyEvent.VK_S: {
-                deltaX = (int) (-Math.cos(Math.toRadians(alpha)) * speed);
-                deltaY = (int) (- Math.sin(Math.toRadians(alpha)) * speed);
+                deltaX = (float) (-Math.cos(Math.toRadians(alpha)) * speed);
+                deltaY = (float) (- Math.sin(Math.toRadians(alpha)) * speed);
                 break;
             }
             case KeyEvent.VK_Q: {
@@ -106,19 +106,19 @@ public class TankDto implements Serializable {
         this.id = id;
     }
 
-    public int getX() {
+    public float getX() {
         return X;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         X = x;
     }
 
-    public int getY() {
+    public float getY() {
         return Y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         Y = y;
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OutputConnection{
     public Socket output;
-    public static Map<Integer, TankDto> tanks = new HashMap<>();
+    public static Map<Integer, HashMap<Integer,TankDto>> mapForMap = new HashMap<>();
     public AtomicBoolean isConnection = new AtomicBoolean(true);
     ObjectOutputStream objectOutputStream;
 
@@ -20,11 +20,11 @@ public class OutputConnection{
         isConnection.set(true);
     }
 
-    public void writeTank(Map<Integer, TankDto> tanks) {
+    public void writeTank(Map<Integer, HashMap<Integer,TankDto>> tanks) {
         try {
             synchronized (tanks) {
                 if (tanks.size() != 0) {
-                    for (TankDto tankDto : tanks.values()) {
+                    for (HashMap<Integer, TankDto> tankDto : tanks.values()) {
                         objectOutputStream.writeObject(tankDto);
                         objectOutputStream.reset();
                     }
