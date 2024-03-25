@@ -1,4 +1,4 @@
-package tank.event;
+package tank.dto;
 
 import java.awt.event.KeyEvent;
 import java.io.Serializable;

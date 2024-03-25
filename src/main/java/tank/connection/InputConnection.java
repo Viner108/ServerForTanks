@@ -1,7 +1,7 @@
 package tank.connection;
 
-import tank.event.KeyEventDto;
-import tank.event.TankDto;
+import tank.dto.KeyEventDto;
+import tank.dto.TankDto;
 import tank.objectStream.MyObjectInputStream;
 
 import java.io.InputStream;
@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class InputConnection implements Runnable {
     public Socket input;

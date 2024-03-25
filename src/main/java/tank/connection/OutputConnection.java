@@ -1,11 +1,8 @@
 package tank.connection;
 
-import tank.event.TankDto;
-import tank.objectStream.MyObjectOutputStream;
+import tank.dto.TankDto;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +33,6 @@ public class OutputConnection{
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             closeOut();
         }
     }
