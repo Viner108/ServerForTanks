@@ -6,8 +6,8 @@ import java.io.Serializable;
 public class TankDto implements Serializable {
     private static final long serialVersionUID = 8038539938717817115L;
     int id;
-    float X = 0;
-    float Y = 0;
+    float X = 1;
+    float Y = 1;
     public static float TANK_HEIGHT = 109F;
     public static float TANK_WIDTH = 82F;
     private float speed = 5;
@@ -16,6 +16,7 @@ public class TankDto implements Serializable {
     float deltaY = 0;
     float deltaAlpha = 0;
     float speedAlpha = 3;
+    public boolean isFocusable= false;
     public ToreDto tore;
     public TankDto(int id) {
         this.id = id;
@@ -88,6 +89,17 @@ public class TankDto implements Serializable {
             }
         }
     }
+    public void mouseEventClicked (MouseEventDto e) {
+        if ((e.getPoint().getX() <= X + TANK_HEIGHT)
+            && (e.getPoint().getX() >= X)
+            && (e.getPoint().getY() <= Y + TANK_WIDTH)
+            && (e.getPoint().getY() >= Y)
+        ) {
+            setFocusable(true);
+        } else {
+            setFocusable(false);
+        }
+    }
 
 
     @Override
@@ -96,6 +108,14 @@ public class TankDto implements Serializable {
                "X=" + X +
                ", Y=" + Y +
                '}';
+    }
+
+    public boolean isFocusable() {
+        return isFocusable;
+    }
+
+    public void setFocusable(boolean focusable) {
+        isFocusable = focusable;
     }
 
     public int getId() {

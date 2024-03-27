@@ -1,8 +1,9 @@
 package tank.connection;
 
 import tank.dto.KeyEventDto;
+import tank.dto.MouseEventDto;
 import tank.dto.TankDto;
-import tank.dto.ToreDto;
+import tank.logic.LogicCreateAndUse;
 import tank.objectStream.MyObjectInputStream;
 
 import java.io.InputStream;
@@ -14,38 +15,36 @@ import java.util.Iterator;
 
 public class InputConnection implements Runnable {
     public Socket input;
-    public TankDto tankDto;
-    public TankDto tankDto2;
-    public HashMap<Integer,TankDto> map = new HashMap<>();
+    public HashMap<Integer, TankDto> map = new HashMap<>();
+    public LogicCreateAndUse logic;
 
     public InputConnection(Socket input) {
         this.input = input;
-        this.tankDto = new TankDto(input.getPort());
+        this.logic = new LogicCreateAndUse(input, map);
     }
 
     @Override
     public void run() {
-        map.put(tankDto.getId()+ map.size(),tankDto);
-        this.tankDto2 = new TankDto(input.getPort()+ map.size());
-        tankDto2.setX(100);
-        tankDto2.setY(100);
-        tankDto2.tore=new ToreDto(tankDto2.getY(), tankDto2.getX());
-        map.put(tankDto2.getId(),tankDto2);
-        OutputConnection.mapForMap.put(input.getPort(),map);
+        logic.putNewTank();
+        map = logic.putNewTank();
         try (InputStream inputStream = input.getInputStream();
              ObjectInputStream objectInputStream = new MyObjectInputStream(inputStream)) {
             while (true) {
                 try {
                     Object object = objectInputStream.readObject();
-                    KeyEventDto keyEventDto = (KeyEventDto) object;
-                    if (keyEventDto.getKeyCode() != 0) {
-                        if (keyEventDto.isPress()) {
-                            keyPressed(keyEventDto);
-                        } else {
-                            keyReleased(keyEventDto);
+                    if (object instanceof KeyEventDto) {
+                        KeyEventDto keyEventDto = (KeyEventDto) object;
+                        if (keyEventDto.getKeyCode() != 0) {
+                            if (keyEventDto.isPress()) {
+                                keyPressed(keyEventDto);
+                            } else {
+                                keyReleased(keyEventDto);
+                            }
                         }
-                        System.out.println(keyEventDto.toString());
-                        System.out.println(tankDto.toString());
+                        if(keyEventDto.getX()!=0 || keyEventDto.getY()!=0){
+                            mouseClicked(keyEventDto);
+                            System.out.println("MouseEvent");
+                        }
                     }
                 } catch (StreamCorruptedException e) {
                     e.printStackTrace();
@@ -55,20 +54,25 @@ public class InputConnection implements Runnable {
             System.out.println("ClientInput disconnect");
         } finally {
             closeInput();
-            FullConnection.list.forEach(outputAndInputConnection1 -> {
-                if (outputAndInputConnection1.inputConnection == this) {
-                    outputAndInputConnection1.outputConnection.closeOut();
-                }
-            });
-            for (Iterator<OutputAndInputConnection> iterator = FullConnection.list.iterator(); iterator.hasNext(); ) {
-                OutputAndInputConnection outputAndInputConnection = iterator.next();
-                if (outputAndInputConnection.inputConnection.equals(this)) {
-                    iterator.remove();
-                }
-            }
+            deleteConnection();
             OutputConnection.mapForMap.remove(input.getPort());
         }
     }
+
+    private void deleteConnection() {
+        FullConnection.list.forEach(outputAndInputConnection1 -> {
+            if (outputAndInputConnection1.inputConnection == this) {
+                outputAndInputConnection1.outputConnection.closeOut();
+            }
+        });
+        for (Iterator<OutputAndInputConnection> iterator = FullConnection.list.iterator(); iterator.hasNext(); ) {
+            OutputAndInputConnection outputAndInputConnection = iterator.next();
+            if (outputAndInputConnection.inputConnection.equals(this)) {
+                iterator.remove();
+            }
+        }
+    }
+
 
     public void closeInput() {
         try {
@@ -79,27 +83,37 @@ public class InputConnection implements Runnable {
     }
 
     public void keyPressed(KeyEventDto e) {
-        tankDto.keyEventPressed(e);
-        tankDto2.keyEventPressed(e);
-        tankDto.move();
-        tankDto2.move();
-        map.put(tankDto.getId(), tankDto);
-        map.put(tankDto2.getId(), tankDto2);
-        OutputConnection.mapForMap.put(input.getPort(),map);
-        FullConnection.list.forEach(outputAndInputConnection -> {
-            if (!outputAndInputConnection.outputConnection.output.isClosed()) {
-                outputAndInputConnection.outputConnection.writeTank(OutputConnection.mapForMap);
+        for (TankDto dto : map.values()) {
+            if (dto.isFocusable()) {
+                dto.keyEventPressed(e);
+                dto.move();
+                setMap(logic.putInMap(dto));
             }
-        });
+        }
+        sendTank();
 
     }
 
     public void keyReleased(KeyEventDto e) {
-        tankDto.keyEventReleased(e);
-        tankDto2.keyEventReleased(e);
-        map.put(tankDto.getId(), tankDto);
-        map.put(tankDto2.getId(), tankDto2);
-        OutputConnection.mapForMap.put(input.getPort(),map);
+        for (TankDto dto : map.values()) {
+            if (dto.isFocusable()) {
+                dto.keyEventReleased(e);
+                setMap(logic.putInMap(dto));
+            }
+        }
+        sendTank();
+    }
+
+    public void mouseClicked(KeyEventDto e) {
+        for (TankDto dto : map.values()) {
+            MouseEventDto mouseEventDto =e.fromMouseEvent();
+            dto.mouseEventClicked(mouseEventDto);
+            setMap(logic.putInMap(dto));
+        }
+        sendTank();
+    }
+
+    private void sendTank() {
         FullConnection.list.forEach(outputAndInputConnection -> {
             if (!outputAndInputConnection.outputConnection.output.isClosed()) {
                 outputAndInputConnection.outputConnection.writeTank(OutputConnection.mapForMap);
@@ -107,5 +121,11 @@ public class InputConnection implements Runnable {
         });
     }
 
+    public HashMap<Integer, TankDto> getMap() {
+        return map;
+    }
 
+    public void setMap(HashMap<Integer, TankDto> map) {
+        this.map = map;
+    }
 }
