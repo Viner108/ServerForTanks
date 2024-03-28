@@ -87,7 +87,13 @@ public class InputConnection implements Runnable {
             if (dto.isFocusable()) {
                 dto.keyEventPressed(e);
                 dto.move();
+                System.out.println(dto.toString());
                 setMap(logic.putInMap(dto));
+            }
+        }
+        for (HashMap<Integer, TankDto> dto : OutputConnection.mapForMap.values()) {
+            for (TankDto value : dto.values()) {
+                System.out.println(value.toString());
             }
         }
         sendTank();
@@ -102,6 +108,7 @@ public class InputConnection implements Runnable {
             }
         }
         sendTank();
+
     }
 
     public void mouseClicked(KeyEventDto e) {

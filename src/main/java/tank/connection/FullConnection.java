@@ -53,6 +53,7 @@ public class FullConnection extends Thread {
             serverSocketOutput = new ServerSocket(PORT_OUTPUT);
             serverSocketInput = new ServerSocket(PORT_INPUT);
         } catch (Exception e) {
+            e.printStackTrace();
             try {
                 Thread.sleep(500);
                 System.out.println("Try connection by FullConnection");
