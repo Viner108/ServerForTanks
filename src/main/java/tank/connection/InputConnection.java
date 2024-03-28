@@ -37,14 +37,17 @@ public class InputConnection implements Runnable {
                         if (keyEventDto.getKeyCode() != 0) {
                             if (keyEventDto.isPress()) {
                                 keyPressed(keyEventDto);
+                                System.out.println("KeyEvent");
                             } else {
                                 keyReleased(keyEventDto);
                             }
                         }
-                        if(keyEventDto.getX()!=0 || keyEventDto.getY()!=0){
-                            mouseClicked(keyEventDto);
-                            System.out.println("MouseEvent");
-                        }
+                    }
+                    if (object instanceof MouseEventDto) {
+                        MouseEventDto mouseEventDto = (MouseEventDto) object;
+                        mouseClicked(mouseEventDto);
+                        System.out.println("MouseEvent");
+
                     }
                 } catch (StreamCorruptedException e) {
                     e.printStackTrace();
@@ -111,10 +114,9 @@ public class InputConnection implements Runnable {
 
     }
 
-    public void mouseClicked(KeyEventDto e) {
+    public void mouseClicked(MouseEventDto e) {
         for (TankDto dto : map.values()) {
-            MouseEventDto mouseEventDto =e.fromMouseEvent();
-            dto.mouseEventClicked(mouseEventDto);
+            dto.mouseEventClicked(e);
             setMap(logic.putInMap(dto));
         }
         sendTank();
